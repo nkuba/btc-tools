@@ -4,9 +4,18 @@
 *.dll
 *.so
 *.dylib
+btc-tools
 
 # Test binary, build with `go test -c`
 *.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# Visual Studio Code
+.vscode
+*.code-workspace
+
+# Configuration
+config.toml
+transaction.json
