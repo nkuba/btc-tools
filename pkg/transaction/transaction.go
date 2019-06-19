@@ -1,8 +1,19 @@
 package transaction
 
 import (
+	"bytes"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"log"
+
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/txscript"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcutil"
+	"github.com/nkuba/btc-tools/pkg/chain"
 )
 
 type TransactionData struct {
@@ -17,6 +28,69 @@ type TransactionData struct {
 	// Output 2
 	DestinationAddress2 string `json:"output2Address"`
 	Fee                 uint64 `json:"fee"`
+}
+
+func CreateAndPublish(
+	txData *TransactionData,
+	chain *chain.BTC,
+	signer *Signer,
+	networkParams *chaincfg.Params,
+) (string, error) {
+	// Calculate value for output 2.
+	outputAmount2 := txData.SourceTxOutputAmount -
+		txData.FundingAmount -
+		txData.Fee
+
+	// Create unsigned transaction
+	msgTx, err := CreateUnsigned(
+		txData.SourceTxHash,
+		txData.SourceTxOutputIndex,
+		txData.SourceTxOutputAmount,
+		txData.DestinationAddress1,
+		txData.DestinationAddress2,
+		txData.FundingAmount,
+		outputAmount2,
+		networkParams,
+	)
+	if err != nil {
+		log.Fatalf("cannot create unsigned transaction: [%s]", err)
+	}
+
+	// Sign transaction.
+	inputToSignIndex := uint32(0) // we support only transactions with one input
+
+	sourceOutputScript, err := hex.DecodeString(txData.SourceTxOutputScript)
+	if err != nil {
+		log.Fatalf("cannot decode subscript: [%s]", err)
+	}
+
+	if txscript.IsWitnessProgram(sourceOutputScript) {
+		signer.SignWitness(
+			msgTx,
+			sourceOutputScript,
+			inputToSignIndex,
+			txData.SourceTxOutputAmount,
+		)
+	} else {
+		signer.SignNoWitness(
+			msgTx,
+			sourceOutputScript,
+			inputToSignIndex,
+		)
+	}
+
+	// Publish transaction.
+	rawTransaction, err := Serialize(msgTx)
+	if err != nil {
+		return "", fmt.Errorf("transaction serialization failed: [%s]", err)
+	}
+
+	transactionHash, err := chain.PublishTransaction(rawTransaction)
+	if err != nil {
+		log.Fatalf("transaction publication failed: [%v]", err)
+	}
+
+	return transactionHash, nil
 }
 
 func ReadTransactionData(filePath string) (*TransactionData, error) {
