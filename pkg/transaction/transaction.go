@@ -86,3 +86,15 @@ func CreateUnsigned(
 
 	return msgTx, nil
 }
+
+// Serialize encodes a bitcoin transaction message to a hexadecimal format.
+func Serialize(msgTx *wire.MsgTx) ([]byte, error) {
+	var buffer bytes.Buffer
+
+	err := msgTx.Serialize(&buffer)
+	if err != nil {
+		return nil, fmt.Errorf("cannot serialize transaction [%s]", err)
+	}
+
+	return buffer.Bytes(), nil
+}
