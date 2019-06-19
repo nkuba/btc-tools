@@ -1,0 +1,7 @@
+[blockcypher]
+    Token   = "BLOCKCYPHER_API_TOKEN"
+    Coin    = "btc"     # "btc"
+    Chain   = "test3"   # "main", "test3"
+
+[signer]
+    WIF = "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"
