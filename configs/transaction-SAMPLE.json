@@ -1,0 +1,10 @@
+{
+    "sourceTxHash": "8fc1cef6d123ce684b355f81fe5b404e43a8ab1e0f1fa2a9d77bafeb2797ac7a",
+    "sourceTxOutputIndex": 1,
+    "sourceTxOutputAmount": 886000,
+    "sourceTxOutputScript": "76a914d849b1e1cede2ac7d7188cf8700e97d6975c91c488ac",
+    "output1Address": "tb1qwrxmmf39x9kua64al6qjwspz8u5pf8h8za0632",
+    "output1Amount": 9000,
+    "output2Address": "n1EaXu1KH6QqutB5pwZjacs1t4yxx3m3Ex",
+    "fee": 1000
+}
