@@ -21,7 +21,6 @@ func NewSigner(wif string) (*Signer, error) {
 	}
 
 	return &Signer{
-
 		privateKey: privateKey,
 	}, nil
 }
@@ -71,7 +70,7 @@ func (s *Signer) SignWitness(
 		sourceOutputScript,
 		txscript.SigHashAll,
 		s.privateKey,
-		false,
+		true,
 	)
 	if err != nil {
 		return fmt.Errorf("witness signature calculation failed: [%s]", err)
